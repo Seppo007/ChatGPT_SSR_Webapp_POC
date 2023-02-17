@@ -1,0 +1,11 @@
+{
+  "name": "poc_chat_gpt",
+  "version": "1.0.0",
+  "description": "A POC trying out capabilities of ChatGPT to create a full-stack application with corresponding infrastructure",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sebastian Schalow",
+  "license": "MIT"
+}
