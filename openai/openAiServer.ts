@@ -1,5 +1,5 @@
 import express, {Request, Response} from 'express';
-import {listModels} from "./openAiApi";
+import {complete, listModels} from "./openAiApi";
 import fs from 'fs';
 
 if (!process.env.OPEN_AI_KEY || !process.env.OPEN_AI_ORG) {
@@ -8,7 +8,7 @@ if (!process.env.OPEN_AI_KEY || !process.env.OPEN_AI_ORG) {
 }
 
 const app = express();
-const mockModelsResponse: string = fs.readFileSync('openai/modelResponseMock.json').toString();
+const mockModelsResponse: string = fs.readFileSync('openai/mocks/modelResponseMock.json').toString();
 
 app.use(express.urlencoded({extended: true}));
 
@@ -26,12 +26,14 @@ app.post('/listModels', async (req: Request, res: Response) => {
 })
 
 app.post('/submit', async (req: Request, res: Response) => {
-    const userInput = req.body.userText;
+    const userInput = req.body.userPrompt;
+    const chatGptAnswer = await complete(userInput); // 'This is a mock answer from ChatGPT';
     const resultHtml = `
     <div>
-      <label>Answer from OpenAi for input ${userInput}</label>
+      <div style="padding-top: 10px; padding-bottom: 10px">Your question <strong>"${userInput}"</strong> has been answered by ChatGPT:</div>
       <div>
-        <textarea disabled id="result" style="width: 100%; height: 500px; resize: none">Not implemented yet</textarea></div>
+        <textarea disabled id="result" style="width: 100%; height: 500px; resize: none">${chatGptAnswer}</textarea>
+      </div>
     </div>
     `
     const html = mainPage(resultHtml)
@@ -42,20 +44,22 @@ const mainPage = (result = ''): String => {
     return `
     <html>
       <body>
-        <h1>TypeScript Express Example</h1>
+        <h1>OpenAI ChatGPT Client</h1>
         </div>
-        <form method="post" action="/">
-          <button type="submit">Home</button>
-        </form>
+        <div style="display: flex; gap: 15px">
+          <form method="post" action="/">
+            <button type="submit">Home</button>
+          </form>
+          <form method="post" action="/listModels">
+            <button type="submit">List Models</button>  
+          </form>
+        </div>
         <form method="post" action="/submit">
-          <label>Enter a text:</label>
+          <div style="padding: 10px 0 10px 0">Enter a prompt for ChatGPT:</div>
           <div>
-            <textarea name="userText" style="width: 500px; height: 300px" placeholder="Enter a text"></textarea>
+            <textarea name="userPrompt" style="width: 60%; height: 15%; resize: none" placeholder="ChatGPT prompt"></textarea>
           </div>
-          <button type="submit">Submit</button>
-        </form>
-        <form method="post" action="/listModels">
-          <button type="submit">List Models</button>  
+          <button style="padding: 10px; margin: 10px 0 10px 0" type="submit">Submit</button>
         </form>
         ${result}
       </body>
@@ -77,9 +81,8 @@ const modelsPage = (models = 'No answer received'): String => {
       </body>
     </html>`
 }
-
 const openAiListModelsRequest = async () => {
-    const response = mockModelsResponse; // await listModels();
+    const response = mockModelsResponse; // await listModels(); ;
     let formatted;
     try {
         formatted = JSON.stringify(JSON.parse(response), null, 1);
