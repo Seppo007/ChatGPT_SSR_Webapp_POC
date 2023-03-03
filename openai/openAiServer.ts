@@ -13,10 +13,40 @@ const app = express();
 app.use(express.urlencoded({extended: true}));
 
 app.get('/', (req: Request, res: Response) => {
-    const html = `
+    res.send(mainPage());
+});
+
+app.post('/', (req: Request, res: Response) => {
+    res.send(mainPage());
+});
+
+app.post('/listModels', async (req: Request, res: Response) => {
+    const fetchedModelsInfo = await openAiListModelsRequest();
+    res.send(modelsPage(fetchedModelsInfo));
+})
+
+app.post('/submit', async (req: Request, res: Response) => {
+    const userInput = req.body.userText;
+    const resultHtml = `
+    <div>
+      <label>Answer from OpenAi for input ${userInput}</label>
+      <div>
+        <textarea disabled id="result" style="width: 100%; height: 500px; resize: none">Not implemented yet</textarea></div>
+    </div>
+    `
+    const html = mainPage(resultHtml)
+    res.send(html);
+});
+
+const mainPage = (result = ''): String => {
+    return `
     <html>
       <body>
         <h1>TypeScript Express Example</h1>
+        </div>
+        <form method="post" action="/">
+          <button type="submit">Home</button>
+        </form>
         <form method="post" action="/submit">
           <label>Enter a text:</label>
           <div>
@@ -24,42 +54,38 @@ app.get('/', (req: Request, res: Response) => {
           </div>
           <button type="submit">Submit</button>
         </form>
-        <div id="result"></div>
+        <form method="post" action="/listModels">
+          <button type="submit">List Models</button>  
+        </form>
+        ${result}
       </body>
-    </html>
-  `;
-    res.send(html);
-});
+    </html>`
+}
 
-app.post('/submit', async (req: Request, res: Response) => {
-    const userInput = req.body.userText;
-    const response = await openAiListModelsRequest();
-    const html = `
+const modelsPage = (models = 'No answer received'): String => {
+    return `
     <html>
       <body>
-        <h1>TypeScript Express Example</h1>
-        <form method="post" action="/submit">
-          <label>Enter a text:</label>
-          <div>
-            <textarea name="userText" style="width: 500px; height: 300px; resize: none" placeholder="Enter a text"></textarea>
-          </div>
-          <button type="submit">Submit</button>
+        <h1>Available ChatGPT models</h1>
+        </div>
+        <form method="post" action="/">
+          <button type="submit">Home</button>
         </form>
         <div>
-          <label>Answer from OpenAi for input ${userInput}</label>
-          <div><textarea disabled id="result" style="width: 100%; height: 500px; resize: none">
-            ${response}
-          </textarea></div>
+          <textarea disabled style="width: 100%; height: 80%; resize: none;">${models}</textarea>
         </div>
       </body>
-    </html>
-  `;
-    res.send(html);
-});
+    </html>`
+}
 
 const openAiListModelsRequest = async () => {
-    // const response = await listModels();
-    const formatted =  JSON.stringify(JSON.parse(mockResponse.slice(0, -2) + ']'), null, 1);
+    const response = await listModels();
+    let formatted;
+    try {
+        formatted = JSON.stringify(JSON.parse(mockResponse.slice(0, -2) + ']'), null, 1);
+    } catch (e) {
+        return response;
+    }
     return formatted.trim();
 };
 
