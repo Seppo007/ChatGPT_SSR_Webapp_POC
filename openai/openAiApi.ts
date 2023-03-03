@@ -12,35 +12,30 @@ export const listModels = async (): Promise<string> => {
     try {
         const res = await openai.listModels();
         try {
-            let retString = "[";
-            for (let modelEntry of res.data.data) {
-                const stringified = JSON.stringify(modelEntry);
-                retString += stringified;
-                retString += ',';
-            }
-            return retString + ']';
+            return JSON.stringify(res.data.data)
         } catch (stringifyError) {
-            return `Could not stringify ${res}`;
+            return `Could not stringify ${res.data.data}`;
         }
     } catch (error: any) {
-        console.log("error");
         return `An error occured: ${error.response.status} ${error.response.statusText}`;
     }
 }
 
 export const complete = async (input: string): Promise<string> => {
-    const res = await openai.createCompletion({
-        model: 'text-davinci-003',
-        echo: false,
-        prompt: input,
-        stream: false,
-        n: 1,
-        max_tokens: 500,
-        temperature: 0.5,
-    })
-    if(res.data.choices[0].text) {
-        return res.data.choices[0].text;
-    } else {
-        return 'no answer received from ChatGPT'
+    try {
+        const res = await openai.createCompletion({
+            model: 'text-davinci-003',
+            prompt: input,
+            n: 1,
+            max_tokens: 500,
+            temperature: 0.5,
+        })
+        if (res.data.choices[0].text) {
+            return res.data.choices[0].text;
+        } else {
+            return 'no answer received from ChatGPT'
+        }
+    } catch (error: any) {
+        return `An error occured: ${error.response.status} ${error.response.statusText}`;
     }
 }
