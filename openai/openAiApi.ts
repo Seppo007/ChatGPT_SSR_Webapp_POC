@@ -20,6 +20,25 @@ export const listModels = async (): Promise<string> => {
     }
 }
 
+export const chatComplete = async (input: string): Promise<string> => {
+    try {
+        const res = await openai.createChatCompletion({
+            model: 'gpt-3.5-turbo',
+            messages: [{"role": "user", "content": input}],
+            n: 1,
+            max_tokens: 500,
+            temperature: 0.5,
+        });
+        if (res.data.choices[0].message) {
+            return res.data.choices[0].message!!.content;
+        } else {
+            return 'no answer received from ChatGPT'
+        }
+    } catch (error: any) {
+        return `An error occured: ${error.response.status} ${error.response.statusText}`;
+    }
+}
+
 export const complete = async (input: string): Promise<string> => {
     try {
         const res = await openai.createCompletion({

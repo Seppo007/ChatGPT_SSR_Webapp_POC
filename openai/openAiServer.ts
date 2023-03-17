@@ -1,5 +1,5 @@
 import express, {Request, Response} from 'express';
-import {complete, listModels} from "./openAiApi";
+import {chatComplete, complete, listModels} from "./openAiApi";
 import fs from 'fs';
 
 if (!process.env.OPEN_AI_KEY || !process.env.OPEN_AI_ORG) {
@@ -9,6 +9,7 @@ if (!process.env.OPEN_AI_KEY || !process.env.OPEN_AI_ORG) {
 
 const app = express();
 const mockModelsResponse: string = fs.readFileSync('openai/mocks/modelResponseMock.json').toString();
+const mockChatCompleteResponse: string = fs.readFileSync('openai/mocks/chatCompleteResponseMock.json').toString();
 
 app.use(express.urlencoded({extended: true}));
 
@@ -27,7 +28,7 @@ app.post('/listModels', async (req: Request, res: Response) => {
 
 app.post('/submit', async (req: Request, res: Response) => {
     const userInput = req.body.userPrompt;
-    const chatGptAnswer = await complete(userInput); // 'This is a mock answer from ChatGPT';
+    const chatGptAnswer = await chatComplete(userInput); // 'This is a mock answer from ChatGPT';
     const resultHtml = `
     <div>
       <div style="padding-top: 10px; padding-bottom: 10px">Your question <strong>"${userInput}"</strong> has been answered by ChatGPT:</div>
