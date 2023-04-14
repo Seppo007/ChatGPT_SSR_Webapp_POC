@@ -12,7 +12,12 @@ const app = express();
 const mockModelsResponse: string = fs.readFileSync('openai/mocks/modelResponseMock.json').toString();
 const mockChatCompleteResponse: string = fs.readFileSync('openai/mocks/chatCompleteResponseMock.json').toString();
 
-let correspondence: ChatCompletionRequestMessage[] = [];
+let correspondence: ChatCompletionRequestMessage[] = [
+    {role: 'user', content: ''},
+    {role: 'system', content: 'Providing an empty string is not permitted!'},
+    {role: 'user', content: 'Hi'},
+    {role: 'assistant', content: 'Hello! How can I assist you today?'},
+];
 
 app.use(express.urlencoded({extended: true}));
 app.use('/css', express.static(__dirname + '/node_modules/bulma/css'))
@@ -78,7 +83,7 @@ const mainPage = (result = '', preserveChat: boolean): String => {
                   <button class="button is-info" style="padding: 10px; margin: 10px 0 10px 0" type="submit">Submit</button>
                 </div>
                 <div class="column" style="display: flex; flex-direction: column">
-                  <pre class="textarea has-fixed-size has-text-success" readonly id="correspondence" placeholder="Chat correspondence overview" style="white-space: pre-wrap; max-width: 50%; height: 800px">${correspondenceString}</pre>    
+                  <pre class="textarea has-fixed-size has-text-info" readonly id="correspondence" placeholder="Chat correspondence overview" style="white-space: pre-wrap; max-width: 50%; height: 800px">${correspondenceString}</pre>    
                   <div>
                   <label class="checkbox">
                     <input name="preserve" type="checkbox" ${preserveChat ? 'checked' : ''}/>
@@ -97,9 +102,31 @@ const mainPage = (result = '', preserveChat: boolean): String => {
 const readableCorrespondence = () => {
     const res: string[] = [];
     for (const entry of correspondence) {
-        res.push(`<span class="has-text-info">${entry.role.toLocaleUpperCase()}:</span> ${entry.content}\n\n`);
+        res.push(`${coloredSpanForRole(entry.role)} ${entry.content}\n\n`);
     }
     return res.toString().replaceAll(',', '');
+}
+
+const coloredSpanForRole = (role: string): string => {
+    const coloredSpan = `<span class="COLOR_CLASS">${role.toLocaleUpperCase()}:</span>`
+    let roleColorClass = '';
+
+    switch (role) {
+        case 'system':
+            roleColorClass = 'has-text-danger-dark has-background-danger-light'
+            break;
+        case 'assistant':
+            roleColorClass = 'has-text-success has-background-success-light'
+            break;
+        case 'user':
+            roleColorClass = 'has-text-warning-dark has-background-warning-light'
+            break;
+        default:
+            roleColorClass = 'has-text-danger has-background-danger-light'
+            break;
+    }
+
+    return coloredSpan.replace('COLOR_CLASS', roleColorClass);
 }
 
 const modelsPage = (models = 'No answer received'): String => {

@@ -10,6 +10,7 @@
     "strict": true,
     "lib": [
       "ES2021.String",
+      "es2015.promise"
     ]
   },
   "include": [
