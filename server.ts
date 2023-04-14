@@ -34,7 +34,6 @@ app.post('/submit', async (req: Request, res: Response) => {
     const userInput = req.body.userPrompt;
     const preserveChat = !!req.body.preserve;
     updateMessagesStack(userInput, preserveChat);
-    console.log("preserve:", preserveChat);
     const chatGptAnswer = await chatComplete(correspondence); // 'This is a mock answer from ChatGPT';
     const resultHtml = `
     <div>
@@ -66,21 +65,20 @@ const mainPage = (result = '', preserveChat: boolean): String => {
           </div>
             <div style="display: flex; gap: 15px">
               <form method="post" action="/">
-                <button class="button" type="submit">Home</button>
+                <button class="button is-rounded" type="submit">Home</button>
               </form>
               <form method="post" action="/listModels">
-                <button class="button" type="submit">List Models</button>  
+                <button class="button is-rounded" type="submit">List Models</button>  
               </form>
             </div>
             <form method="post" action="/submit">
-            <div style="padding: 10px 0 10px 0">Enter a prompt for ChatGPT:</div>
               <div class="columns">
                 <div class="column">
-                  <textarea class="textarea has-fixed-size" name="userPrompt" style="width: 96%; height: 800px; resize: none" placeholder="ChatGPT prompt"></textarea>
-                  <button class="button" style="padding: 10px; margin: 10px 0 10px 0" type="submit">Submit</button>
+                  <textarea class="textarea has-fixed-size" name="userPrompt" style="height: 800px; resize: none" placeholder="ChatGPT prompt"></textarea>
+                  <button class="button is-info" style="padding: 10px; margin: 10px 0 10px 0" type="submit">Submit</button>
                 </div>
                 <div class="column" style="display: flex; flex-direction: column">
-                  <textarea class="textarea has-fixed-size" readonly id="correspondence" placeholder="Chat correspondence overview" style="width: 96%; height: 800px">${correspondenceString}</textarea>    
+                  <pre class="textarea has-fixed-size has-text-success" readonly id="correspondence" placeholder="Chat correspondence overview" style="white-space: pre-wrap; max-width: 50%; height: 800px">${correspondenceString}</pre>    
                   <div>
                   <label class="checkbox">
                     <input name="preserve" type="checkbox" ${preserveChat ? 'checked' : ''}/>
@@ -98,8 +96,8 @@ const mainPage = (result = '', preserveChat: boolean): String => {
 
 const readableCorrespondence = () => {
     const res: string[] = [];
-    for(const entry of correspondence) {
-        res.push(`${entry.role}: ${entry.content}\n\n`);
+    for (const entry of correspondence) {
+        res.push(`<span class="has-text-info">${entry.role.toLocaleUpperCase()}:</span> ${entry.content}\n\n`);
     }
     return res.toString().replaceAll(',', '');
 }
@@ -115,7 +113,7 @@ const modelsPage = (models = 'No answer received'): String => {
         <div class="container">
           </div>
           <form method="post" action="/">
-            <button class="button" type="submit">Home</button>
+            <button class="button is-rounded" type="submit">Home</button>
           </form>
           <div>
             <textarea class="textarea has-fixed-size" readonly style="width: 100%; height: 80%; resize: none;">${models}</textarea>
