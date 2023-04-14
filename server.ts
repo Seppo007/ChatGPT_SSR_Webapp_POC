@@ -1,5 +1,5 @@
 import express, {Request, Response} from 'express';
-import {chatComplete, complete, listModels} from "./openAiApi";
+import {chatComplete, complete, listModels} from "./openai/openAiApi";
 import fs from 'fs';
 import {ChatCompletionRequestMessage} from "openai";
 
