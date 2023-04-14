@@ -42,7 +42,7 @@ export const chatComplete = async (input: string): Promise<string> => {
 export const complete = async (input: string): Promise<string> => {
     try {
         const res = await openai.createCompletion({
-            model: 'text-davinci-003',
+            model: 'gpt-3.5-turbo',
             prompt: input,
             n: 1,
             max_tokens: 500,
