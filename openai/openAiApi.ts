@@ -1,4 +1,4 @@
-import {Configuration, OpenAIApi} from "openai";
+import {ChatCompletionRequestMessage, Configuration, OpenAIApi} from "openai";
 
 const configuration = new Configuration({
     organization: process.env.OPEN_AI_ORG,
@@ -6,6 +6,7 @@ const configuration = new Configuration({
 });
 
 const openai = new OpenAIApi(configuration);
+
 
 export const listModels = async (): Promise<string> => {
     try {
@@ -20,17 +21,19 @@ export const listModels = async (): Promise<string> => {
     }
 }
 
-export const chatComplete = async (input: string): Promise<string> => {
+export const chatComplete = async (correspondence: ChatCompletionRequestMessage[]): Promise<string> => {
     try {
         const res = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
-            messages: [{"role": "user", "content": input}],
+            messages: correspondence,
             n: 1,
             max_tokens: 500,
             temperature: 0.5,
         });
-        if (res.data.choices[0].message) {
-            return res.data.choices[0].message!!.content;
+        const chatGPTAnswer = res.data.choices[0].message;
+        if (chatGPTAnswer) {
+            correspondence.push({role: 'assistant', content: chatGPTAnswer.content})
+            return chatGPTAnswer.content;
         } else {
             return 'no answer received from ChatGPT'
         }
