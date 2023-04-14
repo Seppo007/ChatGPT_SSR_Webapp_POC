@@ -75,7 +75,13 @@ const mainPage = (result = '', preserveChat: boolean): String => {
               <div class="columns">
                 <div class="column">
                   <textarea class="textarea has-fixed-size" name="userPrompt" style="height: 800px; resize: none" placeholder="ChatGPT prompt"></textarea>
-                  <button class="button is-info" style="padding: 10px; margin: 10px 0 10px 0" type="submit">Submit</button>
+                  <button 
+                    class="button is-info" 
+                    style="padding: 10px; margin: 10px 0 10px 0"
+                    type="submit"
+                    onclick="(() => this.className = 'button is-info is-loading disabled')()">
+                      Submit
+                  </button>
                 </div>
                 <div class="column" style="display: flex; flex-direction: column">
                   <pre class="textarea has-fixed-size has-text-info" readonly id="correspondence" placeholder="Chat correspondence overview" style="white-space: pre-wrap; max-width: 50%; height: 800px">${correspondenceString}</pre>    
@@ -87,7 +93,7 @@ const mainPage = (result = '', preserveChat: boolean): String => {
                 </div>
               </div>
             </div>
-          </form>   
+          </form>
           ${result}
         </div>
       </body>
