@@ -83,7 +83,7 @@ const mainPage = (result = '', preserveChat: boolean): String => {
                   <textarea class="textarea has-fixed-size" readonly id="correspondence" placeholder="Chat correspondence overview" style="width: 96%; height: 800px">${correspondenceString}</textarea>    
                   <div>
                   <label class="checkbox">
-                    <input id="preserve" type="checkbox" ${preserveChat ? 'checked' : ''}/>
+                    <input name="preserve" type="checkbox" ${preserveChat ? 'checked' : ''}/>
                     Preserve chat
                   </label>
                 </div>
