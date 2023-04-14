@@ -12,12 +12,7 @@ const app = express();
 const mockModelsResponse: string = fs.readFileSync('openai/mocks/modelResponseMock.json').toString();
 const mockChatCompleteResponse: string = fs.readFileSync('openai/mocks/chatCompleteResponseMock.json').toString();
 
-let correspondence: ChatCompletionRequestMessage[] = [
-    {role: 'user', content: ''},
-    {role: 'system', content: 'Providing an empty string is not permitted!'},
-    {role: 'user', content: 'Hi'},
-    {role: 'assistant', content: 'Hello! How can I assist you today?'},
-];
+let correspondence: ChatCompletionRequestMessage[] = [];
 
 app.use(express.urlencoded({extended: true}));
 app.use('/css', express.static(__dirname + '/node_modules/bulma/css'))
