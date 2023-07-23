@@ -37,7 +37,7 @@ export const chatComplete = async (correspondence: ChatCompletionRequestMessage[
             const chatGPTAnswer = res.data.choices[0].message;
             if (chatGPTAnswer) {
                 correspondence.push({role: 'assistant', content: chatGPTAnswer.content})
-                return chatGPTAnswer.content;
+                return chatGPTAnswer.content!;
             } else {
                 return 'no answer received from ChatGPT'
             }
