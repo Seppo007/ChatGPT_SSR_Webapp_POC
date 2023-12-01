@@ -1,6 +1,6 @@
 import express, {Request, Response} from 'express';
-import {chatComplete, complete, listModels} from "./openai/openAiApi";
-import {ChatCompletionRequestMessage} from "openai";
+import {chatComplete} from "./openai/openAiApi";
+import OpenAI from "openai";
 import * as fs from "fs";
 
 if (!process.env.OPEN_AI_KEY || !process.env.OPEN_AI_ORG) {
@@ -12,7 +12,7 @@ const app = express();
 const mockModelsResponse: string = fs.readFileSync('openai/mocks/modelResponseMock.json').toString();
 const mockChatCompleteResponse: string = fs.readFileSync('openai/mocks/chatCompleteResponseMock.json').toString();
 
-let correspondence: ChatCompletionRequestMessage[] = [];
+let correspondence: OpenAI.Chat.ChatCompletionMessageParam[] = [];
 
 app.use(express.urlencoded({extended: true}));
 app.use('/css', express.static(__dirname + '/node_modules/bulma/css'))
@@ -151,7 +151,7 @@ const modelsPage = (models = 'No answer received'): String => {
     </html>`
 }
 const openAiListModelsRequest = async () => {
-    const response = mockModelsResponse; // await listModels(); ;
+    const response = mockModelsResponse; // await listModels();
     let formatted;
     try {
         formatted = JSON.stringify(JSON.parse(response), null, 1);
